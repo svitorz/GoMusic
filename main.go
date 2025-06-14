@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/svitorz/GoMusic/router"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	appRoutes := gin.Default()
+
+	router.SetupRouter(appRoutes)
+
+	appRoutes.Run()
 }
