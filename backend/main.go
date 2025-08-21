@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/svitorz/GoMusic/router"
+	"github.com/svitorz/GoMusic/backend/router"
 )
 
 func main() {
@@ -10,5 +10,5 @@ func main() {
 
 	router.SetupRouter(appRoutes)
 
-	appRoutes.Run(":8000")
+	appRoutes.Run(":8080")
 }
