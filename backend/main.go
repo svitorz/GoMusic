@@ -19,9 +19,10 @@ func main() {
 
 	db, err := database.ConnectDb(dbconf)
 	if err != nil {
-		log.Fatal("Error to connect to database")
+		log.Print(err)
+		log.Print("Error to connect to database")
 	}
 
 	fmt.Println(db)
-	appRoutes.Run(":8080")
+	appRoutes.Run()
 }
