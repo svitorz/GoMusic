@@ -11,13 +11,15 @@ import (
 func ConnectDb(database *config.Database) (*gorm.DB, error) {
 	var dsn string
 	dsn = fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%o sslmode=disable TimeZone=Asia/Shanghai",
+		"host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=America/Sao_Paulo",
 		database.Host,
 		database.User,
 		database.Secret,
 		database.Name,
-		database.Port,
+		// database.Port,
 	)
+
+	fmt.Println(dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
