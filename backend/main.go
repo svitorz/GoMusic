@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -17,12 +16,11 @@ func main() {
 
 	dbconf := config.LoadDatabase()
 
-	db, err := database.ConnectDb(dbconf)
+	_, err := database.ConnectDB(dbconf)
 	if err != nil {
 		log.Print(err)
 		log.Print("Error to connect to database")
 	}
 
-	fmt.Println(db)
 	appRoutes.Run()
 }
