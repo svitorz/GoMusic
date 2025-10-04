@@ -1,3 +1,3 @@
 SET TIMEZONE TO 'America/Sao_Paulo';
 
-CREATE DATABASE IF NOT EXISTS gomusic;
+CREATE TYPE user_role AS ENUM ('admin', 'customer', 'creator');
