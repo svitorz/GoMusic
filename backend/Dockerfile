@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    apk add --no-cache git
+    apk add --no-cache git tzdata
 
 COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod \
@@ -20,4 +20,5 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 FROM scratch
 COPY --from=builder /bin/backend /backend
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 ENTRYPOINT ["/backend"]
