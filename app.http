@@ -2,15 +2,33 @@
 
 @base = http://localhost:8080
 
-GET {{base}}/v1/artistas HTTP/1.1
-Content-Type: application/json
+GET {{base}}/users
+ Accept: application/json
+ Content-Type: application/json HTTP/1.1
+
+POST {{base}}/users 
+  Accept: application/json
+  Content-Type: application/json HTTP/1.1
+  
+  {
+    "name": "John Doe",
+    "email": "johndoe@gmail.com",
+    "password": "password123",
+  }
+
+GET {{base}}/users/1
+ Accept: application/json
+ Content-Type: application/json HTTP/1.1
 
 
-### 
+PUT {{base}}/users/1
+  Accept: application/json
+  Content-Type: application/json HTTP/1.1
+  {
+    "name": "Doe John",
+    "email": "doejohn@gmail.com",
+  }
 
-GET { HTTP/1.1
-
-
-### 
-
-GET } HTTP/1.1
+DELETE {{base}}/users/1
+ Accept: application/json
+ Content-Type: application/json HTTP/1.1
