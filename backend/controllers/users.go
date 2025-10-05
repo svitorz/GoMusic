@@ -6,23 +6,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/svitorz/GoMusic/backend/auth"
-	"github.com/svitorz/GoMusic/backend/config"
-	"github.com/svitorz/GoMusic/backend/database"
 	"github.com/svitorz/GoMusic/backend/models"
+	"github.com/svitorz/GoMusic/backend/repository"
 )
 
 func GetUsers(c *gin.Context) {
 	var users []models.User
-	dbconf := config.LoadDatabase()
-
-	db, err := database.ConnectDB(dbconf)
-	if err != nil {
-		log.Print(err)
-		c.JSON(500, gin.H{"error": "Error to connect to database"})
+	result := repository.DB.Find(&users)
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": result.Error.Error()})
+		return
 	}
-
-	result := db.Find(&users)
-	c.JSON(200, gin.H{"users": result})
+	c.JSON(200, gin.H{"users": users})
 }
 
 func GetUserByID(c *gin.Context) {
@@ -30,14 +25,6 @@ func GetUserByID(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
-	dbconf := config.LoadDatabase()
-
-	db, err := database.ConnectDB(dbconf)
-	if err != nil {
-		log.Print(err)
-		log.Print("Error to connect to database")
-	}
-
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -57,7 +44,7 @@ func CreateUser(c *gin.Context) {
 	user.Password = encryptedPassword
 
 	// Save the user to the database
-	result := db.Create(&user)
+	result := repository.DB.Create(&user)
 	if result.Error != nil {
 		c.JSON(500, gin.H{"error": result.Error.Error()})
 		return
@@ -79,16 +66,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	dbconf := config.LoadDatabase()
-	db, err := database.ConnectDB(dbconf)
-	if err != nil {
-		log.Print(err)
-		c.JSON(500, gin.H{"error": "Error to connect to database"})
-		return
-	}
-
 	user := models.User{}
-	result := db.Where("email = ?", input.Email).First(&user)
+	result := repository.DB.Where("email = ?", input.Email).First(&user)
 	if result.Error != nil {
 		log.Println(result.Error)
 		c.JSON(401, gin.H{"error": "Invalid email or password"})
