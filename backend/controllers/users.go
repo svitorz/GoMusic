@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -46,6 +47,10 @@ func CreateUser(c *gin.Context) {
 	// Save the user to the database
 	result := repository.DB.Create(&user)
 	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "uni_users_email") {
+			c.JSON(400, gin.H{"error": "Email already in use"})
+			return
+		}
 		c.JSON(500, gin.H{"error": result.Error.Error()})
 		return
 	}
