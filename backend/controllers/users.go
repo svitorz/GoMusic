@@ -24,9 +24,11 @@ func GetUsers(c *gin.Context) {
 	result := db.Find(&users)
 	c.JSON(200, gin.H{"users": result})
 }
+
 func GetUserByID(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Get user by ID"})
 }
+
 func CreateUser(c *gin.Context) {
 	dbconf := config.LoadDatabase()
 
@@ -46,6 +48,15 @@ func CreateUser(c *gin.Context) {
 	user.UpdatedAt = time.Now()
 	user.Role = "customer"
 
+	// Encrypt the password before saving
+	encryptedPassword, err := encryptPassword(user.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Error encrypting password"})
+		return
+	}
+	user.Password = encryptedPassword
+
+	// Save the user to the database
 	result := db.Create(&user)
 	if result.Error != nil {
 		c.JSON(500, gin.H{"error": result.Error.Error()})
@@ -58,24 +69,34 @@ func CreateUser(c *gin.Context) {
 func Login(c *gin.Context) {
 	var err error
 
-	user := models.User{}
-
-	dbconf := config.LoadDatabase()
-
-	db, err := database.ConnectDB(dbconf)
-	if err != nil {
-		log.Print(err)
-		log.Print("Error to connect to database")
-		return
+	// Estrutura separada para input
+	var input struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
-
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	result := db.Where("email = ? AND password = ?", user.Email, user.Password).First(&user)
+	dbconf := config.LoadDatabase()
+	db, err := database.ConnectDB(dbconf)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, gin.H{"error": "Error to connect to database"})
+		return
+	}
+
+	user := models.User{}
+	result := db.Where("email = ?", input.Email).First(&user)
 	if result.Error != nil {
+		log.Println(result.Error)
+		c.JSON(401, gin.H{"error": "Invalid email or password"})
+		return
+	}
+
+	// Aqui, user.Password é o hash do banco; input.Password é a senha digitada
+	if passwordIsValid, err := verifyPassword(input.Password, user.Password); err != nil || !passwordIsValid {
 		c.JSON(401, gin.H{"error": "Invalid email or password"})
 		return
 	}
@@ -90,6 +111,7 @@ func Login(c *gin.Context) {
 		"token": token,
 	})
 }
+
 func UpdateUser(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Update user by ID"})
 }
