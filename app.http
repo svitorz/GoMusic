@@ -2,25 +2,30 @@
 
 @base = http://localhost:8080
 
+# GET all users
+
 GET {{base}}/users
  Accept: application/json
  Content-Type: application/json HTTP/1.1
+ Token: valid-token HTTP/1.1
 
+# CREATE 
 POST {{base}}/users 
-  Accept: application/json
-  Content-Type: application/json HTTP/1.1
-  
+ Accept: application/json
+ Content-Type: application/json HTTP/1.1
+ token: valid-token HTTP/1.1
   {
     "name": "John Doe",
     "email": "johndoe@gmail.com",
     "password": "password123",
-  }
+  } 
 
+# GET user by ID
 GET {{base}}/users/1
  Accept: application/json
  Content-Type: application/json HTTP/1.1
 
-
+# UPDATE user by ID
 PUT {{base}}/users/1
   Accept: application/json
   Content-Type: application/json HTTP/1.1
@@ -29,6 +34,7 @@ PUT {{base}}/users/1
     "email": "doejohn@gmail.com",
   }
 
+# DELETE user by ID
 DELETE {{base}}/users/1
  Accept: application/json
  Content-Type: application/json HTTP/1.1
