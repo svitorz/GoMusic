@@ -1,8 +1,10 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	routes "github.com/svitorz/GoMusic/backend/router/routes"
+)
 
-func SetupRouter(router *gin.Engine) {
-	version := router.Group("/v1")
-	getArtistasRoutes(version)
+func SetupRouter() *gin.Engine {
+	return routes.Config(gin.Default())
 }
