@@ -37,14 +37,13 @@ func CreateUser(c *gin.Context) {
 	user.Role = "customer"
 
 	// Encrypt the password before saving
-	encryptedPassword, err := encryptPassword(user.Password)
+	encryptedPassword, err := HashPassword(user.Password)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Error encrypting password"})
 		return
 	}
 	user.Password = encryptedPassword
 
-	// Save the user to the database
 	result := repository.DB.Create(&user)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "uni_users_email") {
@@ -59,9 +58,6 @@ func CreateUser(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	var err error
-
-	// Estrutura separada para input
 	var input struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -70,30 +66,28 @@ func Login(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
-	user := models.User{}
+	var user models.User
 	result := repository.DB.Where("email = ?", input.Email).First(&user)
 	if result.Error != nil {
-		log.Println(result.Error)
 		c.JSON(401, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	// Aqui, user.Password é o hash do banco; input.Password é a senha digitada
-	if passwordIsValid, err := verifyPassword(input.Password, user.Password); err != nil || !passwordIsValid {
+	if valid := VerifyPassword(input.Password, user.Password); !valid {
+		log.Println("Invalid password attempt for user:", user.Email)
 		c.JSON(401, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	log.Printf("User logged in: %v", user)
+	log.Printf("User logged in: %v", user.Email)
+
 	token, err := auth.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Error generating token"})
 		return
 	}
-	c.JSON(200, gin.H{
-		"token": token,
-	})
+	log.Printf("Token generated: %s", token)
+	c.JSON(200, gin.H{"token": token})
 }
 
 func UpdateUser(c *gin.Context) {
