@@ -22,8 +22,6 @@ func Config(r *gin.Engine) *gin.Engine {
 		} else {
 			r.Handle(route.Method, route.Path, route.HandlerFunc)
 		}
-
-		r.Handle(route.Method, route.Path, route.HandlerFunc)
 	}
 
 	return r

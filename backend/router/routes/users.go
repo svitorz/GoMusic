@@ -11,7 +11,7 @@ var userRoutes = []Route{
 		Path:        "/users",
 		Method:      http.MethodGet,
 		HandlerFunc: controllers.GetUsers,
-		useAuth:     true,
+		useAuth:     false,
 	},
 	{
 		Path:        "/users/{id}",
@@ -36,5 +36,11 @@ var userRoutes = []Route{
 		Method:      http.MethodDelete,
 		HandlerFunc: controllers.DeleteUser,
 		useAuth:     true,
+	},
+	{
+		Path:        "/login",
+		Method:      http.MethodPost,
+		HandlerFunc: controllers.Login,
+		useAuth:     false,
 	},
 }
