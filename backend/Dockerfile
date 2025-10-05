@@ -18,7 +18,6 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -ldflags="-s -w" -o /bin/backend .
 
-FROM scratch
-COPY --from=builder /bin/backend /backend
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+RUN go test -v ./...
+
 ENTRYPOINT ["/backend"]

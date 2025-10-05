@@ -26,7 +26,7 @@ func ConnectDB(database *config.Database) (*gorm.DB, error) {
 	fmt.Println("Connected to database successfully")
 
 	fmt.Println("running migrations...")
-	// 	db.Migrator().DropTable(&models.User{}, &models.Album{}, &models.Music{}, &models.Playlist{})
+	// db.Migrator().DropTable(&models.User{}, &models.Album{}, &models.Music{}, &models.Playlist{})
 	db.AutoMigrate(&models.User{}, &models.Album{}, &models.Music{}, &models.Playlist{})
 
 	return db, nil
